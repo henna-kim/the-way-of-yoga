@@ -48,7 +48,11 @@ class poseDetector():
         pTime = 0
         while True:
             success, image = cap.read()
-            width = int(image.shape[1] * scale_percent / 100)
+            try:
+                width = int(image.shape[1] * scale_percent / 100)
+            except AttributeError:
+                print("Video just finished")
+                break
             height = int(image.shape[0] * scale_percent / 100)
             dim = (width, height)
 
@@ -72,5 +76,5 @@ class poseDetector():
 
 if __name__ == '__main__':
     detector = poseDetector()
-    path = '../videos/video.mp4'
+    path = '../videos/yoga.mp4'
     detector.runDetector(path)
