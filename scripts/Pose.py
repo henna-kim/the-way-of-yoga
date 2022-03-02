@@ -1,7 +1,8 @@
 import cv2
 import mediapipe as mp
 import time
-
+import math
+import numpy as np
 
 class poseDetector():
 
@@ -17,6 +18,9 @@ class poseDetector():
         self.detectionCon = detectionCon
         self.trackCon = trackCon
 
+    def distance(self, x1, y1, x2, y2):
+        dist = math.sqrt((math.fabs(x2 - x1)) ** 2 + ((math.fabs(y2 - y1))) ** 2)
+        return dist
 
     def findPose(self, img, draw=True):
 
@@ -60,6 +64,7 @@ class poseDetector():
             img = cv2.resize(image, dim, interpolation=cv2.INTER_AREA)
             img = self.findPose(img)
             lmlist = self.findPosition(img)
+
             if len(lmlist) != 0 and mark_part:
                 number = pose_number
                 cv2.circle(img, (lmlist[number][1], lmlist[number][2]), 10, (0, 0, 255), cv2.FILLED)
@@ -71,10 +76,42 @@ class poseDetector():
             cv2.putText(img, str(int(fps)), (70, 50),
                         cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
+            x_1, y_1 = lmlist[25][1], lmlist[25][2]
+            x_2, y_2 = lmlist[23][1], lmlist[23][2]
+
+            # quantifies the hypotenuse of the triangle
+            hypotenuse = self.distance(x_1, x_1, x_2, y_2)
+            # quantifies the horizontal of the triangle
+            horizontal = self.distance(x_1, y_1, x_2, y_1)
+            # makes the third-line of the triangle
+            thirdline = self.distance(x_2, y_2, x_2, y_1)
+            # calculates the angle using trigonometry
+            angle = np.arcsin((thirdline / hypotenuse)) * 180 / math.pi
+
+            # draws all 3 lines
+            cv2.line(img, (x_1, y_1), (x_2, y_2), (0, 0, 255), 2)
+            cv2.line(img, (x_1, y_1), (x_2, y_1), (0, 0, 255), 2)
+            cv2.line(img, (x_2, y_2), (x_2, y_1), (0, 0, 255), 2)
+
+            # put angle text (allow for calculations upto 180 degrees)
+            angle_text = ""
+            if y_2 < y_1 and x_2 > x_1:
+                angle_text = str(int(angle))
+            elif y_2 < y_1 and x_2 < x_1:
+                angle_text = str(int(180 - angle))
+            elif y_2 > y_1 and x_2 < x_1:
+                angle_text = str(int(180 + angle))
+            elif y_2 > y_1 and x_2 > x_1:
+                angle_text = str(int(360 - angle))
+
+            # CHANGE FONT HERE
+            cv2.putText(img, angle_text, (x_1 - 30, y_1), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 0),2)
+
             cv2.imshow('Image', img)
             cv2.waitKey(1)
 
 if __name__ == '__main__':
     detector = poseDetector()
-    path = '../videos/yoga.mp4'
-    detector.runDetector(path)
+    path = '../videos/yoga1.mp4'
+    while True:
+        detector.runDetector(path)
