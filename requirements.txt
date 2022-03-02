@@ -32,3 +32,9 @@ termcolor
 requests
 bs4
 BeautifulSoup4
+
+#pose-estimator
+cv2
+tensorflow
+numpy
+matplotlib
