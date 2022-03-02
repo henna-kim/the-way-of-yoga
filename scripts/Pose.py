@@ -18,6 +18,10 @@ class poseDetector():
         self.detectionCon = detectionCon
         self.trackCon = trackCon
 
+    def getAngle(a, b, c):
+        ang = math.degrees(math.atan2(c[1] - b[1], c[0] - b[0]) - math.atan2(a[1] - b[1], a[0] - b[0]))
+        return ang + 360 if ang < 0 else ang
+
     def distance(self, x1, y1, x2, y2):
         dist = math.sqrt((math.fabs(x2 - x1)) ** 2 + ((math.fabs(y2 - y1))) ** 2)
         return dist
@@ -76,42 +80,66 @@ class poseDetector():
             cv2.putText(img, str(int(fps)), (70, 50),
                         cv2.FONT_HERSHEY_PLAIN, 3, (255, 0, 0), 3)
 
-            x_1, y_1 = lmlist[25][1], lmlist[25][2]
-            x_2, y_2 = lmlist[23][1], lmlist[23][2]
+            a = np.array([lmlist[27][1], lmlist[27][2]])
+            b = np.array([lmlist[25][1], lmlist[25][2]])
+            c = np.array([lmlist[23][1], lmlist[23][2]])
 
-            # quantifies the hypotenuse of the triangle
-            hypotenuse = self.distance(x_1, x_1, x_2, y_2)
-            # quantifies the horizontal of the triangle
-            horizontal = self.distance(x_1, y_1, x_2, y_1)
-            # makes the third-line of the triangle
-            thirdline = self.distance(x_2, y_2, x_2, y_1)
-            # calculates the angle using trigonometry
-            angle = np.arcsin((thirdline / hypotenuse)) * 180 / math.pi
+            ba = a - b
+            bc = c - b
 
-            # draws all 3 lines
-            cv2.line(img, (x_1, y_1), (x_2, y_2), (0, 0, 255), 2)
-            cv2.line(img, (x_1, y_1), (x_2, y_1), (0, 0, 255), 2)
-            cv2.line(img, (x_2, y_2), (x_2, y_1), (0, 0, 255), 2)
-
-            # put angle text (allow for calculations upto 180 degrees)
-            angle_text = ""
-            if y_2 < y_1 and x_2 > x_1:
-                angle_text = str(int(angle))
-            elif y_2 < y_1 and x_2 < x_1:
-                angle_text = str(int(180 - angle))
-            elif y_2 > y_1 and x_2 < x_1:
-                angle_text = str(int(180 + angle))
-            elif y_2 > y_1 and x_2 > x_1:
-                angle_text = str(int(360 - angle))
+            cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
+            angle = np.degrees(np.arccos(cosine_angle))
 
             # CHANGE FONT HERE
-            cv2.putText(img, angle_text, (x_1 - 30, y_1), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 0),2)
+            angle_text = str(int(angle))
+            cv2.putText(img, angle_text, (b[0] - 30, b[1]), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 0),2)
+
+            a = np.array([lmlist[11][1], lmlist[11][2]])
+            b = np.array([lmlist[23][1], lmlist[23][2]])
+            c = np.array([lmlist[25][1], lmlist[25][2]])
+
+            ba = a - b
+            bc = c - b
+
+            cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
+            angle1 = np.degrees(np.arccos(cosine_angle))
+
+            # CHANGE FONT HERE
+            angle_text1 = str(int(angle1))
+            cv2.putText(img, angle_text1, (b[0] - 30, b[1]), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 0), 2)
+
+            a = np.array([lmlist[24][1], lmlist[24][2]])
+            b = np.array([lmlist[26][1], lmlist[26][2]])
+            c = np.array([lmlist[28][1], lmlist[28][2]])
+
+            ba = a - b
+            bc = c - b
+
+            cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
+            angle2 = np.degrees(np.arccos(cosine_angle))
+
+            # CHANGE FONT HERE
+            angle_text2 = str(int(angle2))
+            cv2.putText(img, angle_text2, (b[0] - 30, b[1]), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 0), 2)
+
+            a = np.array([lmlist[11][1], lmlist[11][2]])
+            b = np.array([lmlist[13][1], lmlist[13][2]])
+            c = np.array([lmlist[15][1], lmlist[15][2]])
+
+            ba = a - b
+            bc = c - b
+
+            cosine_angle = np.dot(ba, bc) / (np.linalg.norm(ba) * np.linalg.norm(bc))
+            angle3 = np.degrees(np.arccos(cosine_angle))
+
+            # CHANGE FONT HERE
+            angle_text3 = str(int(angle3))
+            cv2.putText(img, angle_text3, (b[0] - 30, b[1]), cv2.FONT_HERSHEY_COMPLEX, 0.6, (0, 255, 0), 2)
 
             cv2.imshow('Image', img)
             cv2.waitKey(1)
 
 if __name__ == '__main__':
     detector = poseDetector()
-    path = '../videos/yoga1.mp4'
-    while True:
-        detector.runDetector(path)
+    path = '../videos/yoga.mp4'
+    detector.runDetector(path, live=True)
