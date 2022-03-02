@@ -29,8 +29,8 @@ If your project is not set please add it:
 - Then populate it:
 
 ```bash
-##   e.g. if group is "{group}" and project_name is "tripadvisor-and-green-hotels"
-git remote add origin git@github.com:{group}/tripadvisor-and-green-hotels.git
+##   e.g. if group is "{group}" and project_name is "the-way-of-yoga"
+git remote add origin git@github.com:{group}/the-way-of-yoga.git
 git push -u origin master
 git push -u origin --tags
 ```
@@ -41,7 +41,7 @@ Functionnal test with a script:
 cd
 mkdir tmp
 cd tmp
-tripadvisor-and-green-hotels-run
+the-way-of-yoga-run
 ```
 
 # Install
@@ -59,8 +59,8 @@ deactivate; virtualenv -ppython3 ~/venv ; source ~/venv/bin/activate
 Clone the project and install it:
 
 ```bash
-git clone git@github.com:{group}/tripadvisor-and-green-hotels.git
-cd tripadvisor-and-green-hotels
+git clone git@github.com:{group}/the-way-of-yoga.git
+cd the-way-of-yoga
 pip install -r requirements.txt
 make clean install test                # install and test
 ```
@@ -70,5 +70,5 @@ Functionnal test with a script:
 cd
 mkdir tmp
 cd tmp
-tripadvisor-and-green-hotels-run
+the-way-of-yoga-run
 ```
