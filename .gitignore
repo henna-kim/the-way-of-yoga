@@ -3,6 +3,8 @@
 .ipynb_checkpoints
 .DS_Store
 raw_data/
+videos/
+scripts/training.py
 *.csv
 **/__pycache__/
 .env
